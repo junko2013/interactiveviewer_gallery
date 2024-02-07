@@ -1,5 +1,7 @@
 library interactiveviewer_gallery;
 
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import './custom_dismissible.dart';
 import './interactive_viewer_boundary.dart';
@@ -27,7 +29,8 @@ class InteractiveviewerGallery<T> extends StatefulWidget {
     this.maxScale = 2.5,
     this.minScale = 1.0,
     this.onPageChanged,
-    this.enableDragDissmiss = true,
+    this.onDismiss,
+    this.enableDragDismiss = true,
   });
 
   /// The sources to show.
@@ -42,10 +45,12 @@ class InteractiveviewerGallery<T> extends StatefulWidget {
   final double maxScale;
 
   final double minScale;
+  //关闭时
+  final Function? onDismiss;
 
   final ValueChanged<int>? onPageChanged;
 
-  final bool enableDragDissmiss;
+  final bool enableDragDismiss;
 
   @override
   _TweetSourceGalleryState createState() => _TweetSourceGalleryState();
@@ -76,7 +81,7 @@ class _TweetSourceGalleryState extends State<InteractiveviewerGallery>
   void initState() {
     super.initState();
 
-    _enableDismiss = widget.enableDragDissmiss;
+    _enableDismiss = widget.enableDragDismiss;
 
     _pageController = PageController(initialPage: widget.initIndex);
 
@@ -90,7 +95,7 @@ class _TweetSourceGalleryState extends State<InteractiveviewerGallery>
           _animation?.value ?? Matrix4.identity();
     });
 
-    if (widget.enableDragDissmiss) {
+    if (widget.enableDragDismiss) {
       _animationController.addStatusListener((AnimationStatus status) {
         if (status == AnimationStatus.completed && !_enableDismiss) {
           setState(() {
@@ -107,6 +112,7 @@ class _TweetSourceGalleryState extends State<InteractiveviewerGallery>
   void dispose() {
     _pageController!.dispose();
     _animationController.dispose();
+    widget.onDismiss?.call();
 
     super.dispose();
   }
@@ -119,7 +125,7 @@ class _TweetSourceGalleryState extends State<InteractiveviewerGallery>
     final bool initialScale = scale <= widget.minScale;
 
     if (initialScale) {
-      if (widget.enableDragDissmiss && !_enableDismiss) {
+      if (widget.enableDragDismiss && !_enableDismiss) {
         setState(() {
           _enableDismiss = true;
         });
@@ -131,7 +137,7 @@ class _TweetSourceGalleryState extends State<InteractiveviewerGallery>
         });
       }
     } else {
-      if (widget.enableDragDissmiss && _enableDismiss) {
+      if (widget.enableDragDismiss && _enableDismiss) {
         setState(() {
           _enableDismiss = false;
         });
