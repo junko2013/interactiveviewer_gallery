@@ -42,21 +42,10 @@ class HeroDialogRoute<T> extends PageRoute<T> {
     Animation<double> secondaryAnimation,
     Widget child,
   ) {
-    // return FadeTransition(
-    //   opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
-    //   child: child,
-    // );
-    return SlideTransition(
-        position: Tween<Offset>(
-          begin: Offset(0.0, 1.0), // 从底部开始
-          end: Offset.zero, // 结束位置
-        ).animate(
-          CurvedAnimation(
-            parent: ModalRoute.of(context)!.animation!,
-            curve: Curves.easeInOut,
-          ),
-        ),
-        child:child);
+    return FadeTransition(
+      opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
+      child: child,
+    );
   }
 
   @override
