@@ -42,15 +42,15 @@ class InteractiveviewDemoPage extends StatefulWidget {
 
 class _InteractiveviewDemoPageState extends State<InteractiveviewDemoPage> {
   List<DemoSourceEntity> sourceList = [
-    DemoSourceEntity(0, 'image', 'http://file.jinxianyun.com/inter_06.jpg'),
-    DemoSourceEntity(1, 'image', 'http://file.jinxianyun.com/inter_05.jpg'),
-    DemoSourceEntity(2, 'image', 'http://file.jinxianyun.com/inter_02.jpg'),
-    DemoSourceEntity(3, 'image', 'http://file.jinxianyun.com/inter_03.gif'),
-    DemoSourceEntity(4, 'video', 'http://file.jinxianyun.com/inter_04.mp4',
-        previewUrl: 'http://file.jinxianyun.com/inter_04_pre.png'),
+    DemoSourceEntity(0, 'image', 'https://s.songguo.tech/zhiliaoim/image/o/msg/108/24855e8239d4444cb1d6ac807544b2da.webp'),
+    DemoSourceEntity(1, 'image', 'https://s.songguo.tech/zhiliaoim/image/o/msg/108/65ea416f91a84c60bc63ff55735cb9a0.webp'),
+    DemoSourceEntity(2, 'image', 'https://s.songguo.tech/zhiliaoim/image/o/msg/108/79afeca1eac7446ab83e15a4d1c524ca.webp'),
+    DemoSourceEntity(3, 'image', 'https://s.songguo.tech/zhiliaoim/image/o/msg/108/83dcdee3ddb3425f84d4b7f26644cd09.webp'),
+    DemoSourceEntity(4, 'video', 'https://s.songguo.tech/zhiliaoim/video/155/fa18f9b7d5f145de88fa566dc951787b.MP4',
+        previewUrl: 'https://s.songguo.tech/zhiliaoim/image/o/msg/108/9afcb0e7334e43a89b26ae5ebd69908e.webp'),
     DemoSourceEntity(5, 'video',
-        'http://file.jinxianyun.com/6438BF272694486859D5DE899DD2D823.mp4',
-        previewUrl: 'http://file.jinxianyun.com/102.png'),
+        'https://s.songguo.tech/zhiliaoim/video/155/eb9dd4239b7e45c3b6152c9d46b904c8.MP4',
+        previewUrl: 'https://s.songguo.tech/zhiliaoim/image/o/msg/108/d57931afec47424a915a18761c2d663c.webp'),
   ];
 
   @override

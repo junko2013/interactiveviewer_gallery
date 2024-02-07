@@ -1,4 +1,5 @@
 library interactiveviewer_gallery;
+
 import 'package:flutter/material.dart';
 import './custom_dismissible.dart';
 import './interactive_viewer_boundary.dart';
@@ -13,7 +14,8 @@ import './interactive_viewer_boundary.dart';
 /// source is hit after zooming in to disable or enable the swiping gesture of
 /// the [PageView].
 ///
-typedef IndexedFocusedWidgetBuilder = Widget Function(BuildContext context, int index, bool isFocus);
+typedef IndexedFocusedWidgetBuilder = Widget Function(
+    BuildContext context, int index, bool isFocus);
 
 typedef IndexedTagStringBuilder = String Function(int index);
 
@@ -25,6 +27,7 @@ class InteractiveviewerGallery<T> extends StatefulWidget {
     this.maxScale = 2.5,
     this.minScale = 1.0,
     this.onPageChanged,
+    this.enableDragDissmiss = true,
   });
 
   /// The sources to show.
@@ -42,12 +45,14 @@ class InteractiveviewerGallery<T> extends StatefulWidget {
 
   final ValueChanged<int>? onPageChanged;
 
+  final bool enableDragDissmiss;
 
   @override
   _TweetSourceGalleryState createState() => _TweetSourceGalleryState();
 }
 
-class _TweetSourceGalleryState extends State<InteractiveviewerGallery> with SingleTickerProviderStateMixin {
+class _TweetSourceGalleryState extends State<InteractiveviewerGallery>
+    with SingleTickerProviderStateMixin {
   PageController? _pageController;
   TransformationController? _transformationController;
 
@@ -71,6 +76,8 @@ class _TweetSourceGalleryState extends State<InteractiveviewerGallery> with Sing
   void initState() {
     super.initState();
 
+    _enableDismiss = widget.enableDragDissmiss;
+
     _pageController = PageController(initialPage: widget.initIndex);
 
     _transformationController = TransformationController();
@@ -78,17 +85,20 @@ class _TweetSourceGalleryState extends State<InteractiveviewerGallery> with Sing
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 300),
-    )
-      ..addListener(() {
-        _transformationController!.value = _animation?.value ?? Matrix4.identity();
-      })
-      ..addStatusListener((AnimationStatus status) {
+    )..addListener(() {
+      _transformationController!.value =
+          _animation?.value ?? Matrix4.identity();
+    });
+
+    if (widget.enableDragDissmiss) {
+      _animationController.addStatusListener((AnimationStatus status) {
         if (status == AnimationStatus.completed && !_enableDismiss) {
           setState(() {
             _enableDismiss = true;
           });
         }
       });
+    }
 
     currentIndex = widget.initIndex;
   }
@@ -109,7 +119,7 @@ class _TweetSourceGalleryState extends State<InteractiveviewerGallery> with Sing
     final bool initialScale = scale <= widget.minScale;
 
     if (initialScale) {
-      if (!_enableDismiss) {
+      if (widget.enableDragDissmiss && !_enableDismiss) {
         setState(() {
           _enableDismiss = true;
         });
@@ -121,7 +131,7 @@ class _TweetSourceGalleryState extends State<InteractiveviewerGallery> with Sing
         });
       }
     } else {
-      if (_enableDismiss) {
+      if (widget.enableDragDissmiss && _enableDismiss) {
         setState(() {
           _enableDismiss = false;
         });
@@ -148,7 +158,8 @@ class _TweetSourceGalleryState extends State<InteractiveviewerGallery> with Sing
   /// When the right boundary has been hit after scaling up the source, the page
   /// view swiping gets enabled if it has a page to swipe to.
   void _onRightBoundaryHit() {
-    if (!_enablePageView && _pageController!.page!.floor() < widget.sources.length - 1) {
+    if (!_enablePageView &&
+        _pageController!.page!.floor() < widget.sources.length - 1) {
       setState(() {
         _enablePageView = true;
       });
@@ -186,6 +197,7 @@ class _TweetSourceGalleryState extends State<InteractiveviewerGallery> with Sing
 
       _animationController.forward(from: 0);
     }
+    PageController? getPageController()=>_pageController;
   }
 
   @override
@@ -205,7 +217,8 @@ class _TweetSourceGalleryState extends State<InteractiveviewerGallery> with Sing
         child: PageView.builder(
           onPageChanged: _onPageChanged,
           controller: _pageController,
-          physics: _enablePageView ? null : const NeverScrollableScrollPhysics(),
+          physics:
+          _enablePageView ? null : const NeverScrollableScrollPhysics(),
           itemCount: widget.sources.length,
           itemBuilder: (BuildContext context, int index) {
             return GestureDetector(
@@ -231,10 +244,31 @@ class _TweetSourceGalleryState extends State<InteractiveviewerGallery> with Sing
       targetScale = widget.maxScale * 0.7;
     }
 
-    double offSetX = targetScale == 1.0 ? 0.0 : - _doubleTapLocalPosition.dx * (targetScale - 1);
-    double offSetY = targetScale == 1.0 ? 0.0 : - _doubleTapLocalPosition.dy * (targetScale - 1);
+    double offSetX = targetScale == 1.0
+        ? 0.0
+        : -_doubleTapLocalPosition.dx * (targetScale - 1);
+    double offSetY = targetScale == 1.0
+        ? 0.0
+        : -_doubleTapLocalPosition.dy * (targetScale - 1);
 
-    matrix = Matrix4.fromList([targetScale, matrix.row1.x, matrix.row2.x, matrix.row3.x, matrix.row0.y, targetScale, matrix.row2.y, matrix.row3.y, matrix.row0.z, matrix.row1.z, targetScale, matrix.row3.z, offSetX, offSetY, matrix.row2.w, matrix.row3.w]);
+    matrix = Matrix4.fromList([
+      targetScale,
+      matrix.row1.x,
+      matrix.row2.x,
+      matrix.row3.x,
+      matrix.row0.y,
+      targetScale,
+      matrix.row2.y,
+      matrix.row3.y,
+      matrix.row0.z,
+      matrix.row1.z,
+      targetScale,
+      matrix.row3.z,
+      offSetX,
+      offSetY,
+      matrix.row2.w,
+      matrix.row3.w
+    ]);
 
     _animation = Matrix4Tween(
       begin: _transformationController!.value,
@@ -242,7 +276,8 @@ class _TweetSourceGalleryState extends State<InteractiveviewerGallery> with Sing
     ).animate(
       CurveTween(curve: Curves.easeOut).animate(_animationController),
     );
-    _animationController.forward(from: 0).whenComplete(() => _onScaleChanged(targetScale));
+    _animationController
+        .forward(from: 0)
+        .whenComplete(() => _onScaleChanged(targetScale));
   }
 }
-
